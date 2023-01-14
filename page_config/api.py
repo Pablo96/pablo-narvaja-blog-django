@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import AboutSectionSerializer, FooterSerializer
+from .serializers import AboutSectionSerializer, AboutSectionToggleSerializer, FooterSerializer
 from .models import AboutSection, Footer
 
 @api_view(['GET'])
@@ -18,9 +18,8 @@ def toggle_active_section(request: Request, section_name: str) -> Response:
     section = AboutSection.objects.filter(pk=section_name).first()
     if section is None:
         return Response(data=f'About section "{section_name}" not found', status=status.HTTP_404_NOT_FOUND)
-    about_section_serializer = AboutSectionSerializer(section)
-    section = about_section_serializer.data
-    section.active = not section.active
+    about_section_serializer = AboutSectionToggleSerializer(section)
+    about_section_serializer.data.active = not about_section_serializer.data.active
     about_section_serializer.save()
     return Response(data=section, status=status.HTTP_200_OK)
 

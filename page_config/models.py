@@ -13,7 +13,7 @@ class AboutSection(models.Model):
     content = models.TextField()
     img_url = models.CharField(max_length=256, null=False, blank=False, help_text='the url to the image displayed in the about section')
     order = models.SmallIntegerField(null=False, unique=True)
-    active = models.BooleanField(null=False)
+    active = models.BooleanField(null=False, default=False)
 
     def __str__(self) -> str:
         return "{\n\tname:" + self.name + "\n\ttitle:" + self.title + "\n}"

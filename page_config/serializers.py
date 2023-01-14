@@ -6,6 +6,12 @@ class AboutSectionSerializer(ModelSerializer):
         model=AboutSection
         exclude=['active']
 
+
+class AboutSectionToggleSerializer(ModelSerializer):
+    class Meta:
+        model=AboutSection
+        fields='__all__'
+
 class FooterSerializer(ModelSerializer):
     class Meta:
         model=Footer
