@@ -9,4 +9,4 @@ class BlogSerializer(ModelSerializer):
 class BlogPreviewSerializer(ModelSerializer):
     class Meta:
         model=Blog
-        excludes=['content_html']
+        exclude=['content_html']
