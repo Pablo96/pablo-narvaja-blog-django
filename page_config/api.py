@@ -8,7 +8,7 @@ from .models import AboutSection, Footer
 
 @api_view(['GET'])
 def get_active_sections(request: Request) -> Response:
-    active_sections = AboutSection.objects.filter(active=False)
+    active_sections = AboutSection.objects.filter(active=True)
     about_section_serializer = AboutSectionSerializer(active_sections, many=True)
     active_sections = about_section_serializer.data
     return Response(data=active_sections, status=status.HTTP_200_OK)

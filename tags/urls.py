@@ -3,5 +3,5 @@ from . import api
 
 urlpatterns = [
     path('', api.get_all_tags),
-    path('<str:tag>', api.TagAPIView.as_view()),
+    path('<str:tag>/', api.TagAPIView.as_view()),
 ]

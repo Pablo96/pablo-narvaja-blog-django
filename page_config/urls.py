@@ -17,8 +17,8 @@ from django.urls import path
 from . import api
 
 urlpatterns = [
-    path('about/)', api.get_active_sections),
-    path('about/<str:section_name>', api.AboutSectionAPIView.as_view()),
-    path('about/toggle_active/<str:section_name>', api.toggle_active_section),
-    path('footer/<str:footer_id>', api.FooterAPIView.as_view()),
+    path('about/', api.get_active_sections),
+    path('about/<str:section_name>/', api.AboutSectionAPIView.as_view()),
+    path('about/toggle_active/<str:section_name>/', api.toggle_active_section),
+    path('footer/<str:footer_id>/', api.FooterAPIView.as_view()),
 ]
