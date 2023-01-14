@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -17,34 +17,57 @@ def get_all_blogs_previews(request: Request) -> Response:
     blogs_previews = blogs_previews_serializer.data
     return Response(data=blogs_previews, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def get_blog(request: Request, blog_slug: str) -> Response:
-    blog = Blog.objects.filter(pk=blog_slug).first()
-    if blog is None:
-        return Response(data=f'Blog "{blog_slug}" not found', status=status.HTTP_404_NOT_FOUND)
-    blog_serializer = BlogSerializer(blog)
-    blog = blog_serializer.data
-    return Response(data=blog, status=status.HTTP_200_OK)
+class BlogAPIView(APIView):
+    def get(self, request: Request, blog_slug: str) -> Response:
+        blog = Blog.objects.filter(pk=blog_slug).first()
+        if blog is None:
+            return Response(data=f'Blog "{blog_slug}" not found', status=status.HTTP_404_NOT_FOUND)
+        blog_serializer = BlogSerializer(blog)
+        blog = blog_serializer.data
+        return Response(data=blog, status=status.HTTP_200_OK)
 
+    def post(self, request: Request, blog_slug: str) -> Response:
+        prev_blog = Blog.objects.filter(pk=blog_slug).first()
+        should_insert = prev_blog == None
 
-@api_view(['POST', 'PUT'])
-def create_or_update_blog(request: Request, blog_slug: str) -> Response:
-    prev_blog = Blog.objects.filter(pk=blog_slug).first()
-    force_insert = prev_blog == None
+        if not should_insert:
+            return Response(f'Blog "{blog_slug}" already exists, use PUT method to update it', status=status.HTTP_400_BAD_REQUEST)
 
-    if force_insert:
-      blog_serializer = BlogSerializer(data=request.data)
-      response = Response(f'Created blog "{blog_slug}"', status=status.HTTP_201_CREATED)
-    else:
-      blog_serializer = BlogSerializer(prev_blog, data=request.data)
-      response = Response(f'Updated blog "{blog_slug}"', status=status.HTTP_200_OK)
+        blog_serializer = BlogSerializer(data=request.data)
+        if not blog_serializer.is_valid():
+          return Response(data=blog_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if not blog_serializer.is_valid():
-      return Response(data=blog_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            blog_serializer.validated_data.slug=blog_slug
+            blog_serializer.save()
+            return Response(f'Created blog "{blog_slug}"', status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(data=str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
+    def put(self, request: Request, blog_slug: str) -> Response:
+        prev_blog = Blog.objects.filter(pk=blog_slug).first()
+        should_insert = prev_blog == None
 
-    try:
-        blog_serializer.validated_data.slug=blog_slug
-        blog_serializer.save()
-        return response
-    except Exception as e:
-        return Response(data=str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        if should_insert:
+          blog_serializer = BlogSerializer(data=request.data)
+          response = Response(f'Created blog "{blog_slug}"', status=status.HTTP_201_CREATED)
+        else:
+          blog_serializer = BlogSerializer(prev_blog, data=request.data)
+          response = Response(f'Updated blog "{blog_slug}"', status=status.HTTP_200_OK)
+
+        if not blog_serializer.is_valid():
+          return Response(data=blog_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            blog_serializer.validated_data.slug=blog_slug
+            blog_serializer.save()
+            return response
+        except Exception as e:
+            return Response(data=str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self, request: Request, blog_slug: str) -> Response:
+        try:
+            Blog.objects.filter(pk=blog_slug).delete()
+            return Response(data=f'Deleted blog "{blog_slug}"', status=status.HTTP_200_OK)
+        except:
+            return Response(data=f'Blog "{blog_slug}" not found', status=status.HTTP_404_NOT_FOUND)

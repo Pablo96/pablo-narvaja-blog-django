@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -13,17 +13,24 @@ def get_all_tags(request: Request) -> Response:
     tags = tag_serializer.data
     return Response(data=tags, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def get_tag(request: Request, tag: str) -> Response:
-    tag = Tag.objects.filter(name=tag).first()
-    if tag is None:
-        return Response(data=f'Tag "{tag}" not found', status=status.HTTP_404_NOT_FOUND)
-    
-    tag_serializer = TagSerializer(tags, many=True)
-    tags = tag_serializer.data
-    return Response(data=tags, status=status.HTTP_200_OK)
+class TagAPIView(APIView):
+    def get(self, request: Request, tag: str) -> Response:
+        tag_obj = Tag.objects.filter(name=tag).first()
+        if tag_obj is None:
+            return Response(data=f'Tag "{tag}" not found', status=status.HTTP_404_NOT_FOUND)
+        
+        tag_serializer = TagSerializer(tag_obj)
+        tag = tag_serializer.data
+        return Response(data=tag, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def create_tag(request: Request, tag: str) -> Response:
-    _ = Tag.objects.create(name=tag)
-    return Response(data=f'Tag "{tag}" created', status=status.HTTP_201_OK)
+    def post(self, request: Request, tag: str) -> Response:
+        _ = Tag.objects.get_or_create(name=tag)
+        return Response(data=f'Tag "{tag}" created', status=status.HTTP_201_CREATED)
+
+    def delete(self, request: Request, tag: str) -> Response:
+        try:
+            _ = Tag.objects.filter(pk=tag).delete()
+            return Response(data=f'Tag "{tag}" deleted', status=status.HTTP_200_OK)
+        except:
+            return Response(data=f'Tag "{tag}" not found', status=status.HTTP_404_NOT_FOUND)
+        
