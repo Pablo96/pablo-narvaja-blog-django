@@ -4,11 +4,15 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import BlogSerializer, BlogPreviewSerializer
-from .models import Blog
+from .models import Blog, Tag
 
 @api_view(['GET'])
 def get_all_blogs_previews(request: Request) -> Response:
-    blogs_previews = Blog.objects.defer('content_html').all()
+    tags = request.query_params.getlist('tag')
+    if tags is not None and len(tags) > 0:
+      blogs_previews = Blog.objects.defer('content_html').filter(tags__in=tags)
+    else:
+       blogs_previews = Blog.objects.defer('content_html').all()
     blogs_previews_serializer = BlogPreviewSerializer(blogs_previews, many=True)
     blogs_previews = blogs_previews_serializer.data
     return Response(data=blogs_previews, status=status.HTTP_200_OK)
