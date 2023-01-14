@@ -49,17 +49,15 @@ class BlogAPIView(APIView):
         should_insert = prev_blog == None
 
         if should_insert:
-          blog_serializer = BlogSerializer(data=request.data)
-          response = Response(f'Created blog "{blog_slug}"', status=status.HTTP_201_CREATED)
-        else:
-          blog_serializer = BlogSerializer(prev_blog, data=request.data)
-          response = Response(f'Updated blog "{blog_slug}"', status=status.HTTP_200_OK)
+            return Response(f'Blog "{blog_slug}" does not exists, use POST method to create it', status=status.HTTP_400_BAD_REQUEST)
+    
+        blog_serializer = BlogSerializer(prev_blog, data=request.data)
+        response = Response(f'Updated blog "{blog_slug}"', status=status.HTTP_200_OK)
 
         if not blog_serializer.is_valid():
           return Response(data=blog_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            blog_serializer.validated_data.slug=blog_slug
             blog_serializer.save()
             return response
         except Exception as e:

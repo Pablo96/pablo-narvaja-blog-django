@@ -18,10 +18,10 @@ def toggle_active_section(request: Request, section_name: str) -> Response:
     section = AboutSection.objects.filter(pk=section_name).first()
     if section is None:
         return Response(data=f'About section "{section_name}" not found', status=status.HTTP_404_NOT_FOUND)
+    section.active = not section.active
+    section.save()
     about_section_serializer = AboutSectionToggleSerializer(section)
-    about_section_serializer.data.active = not about_section_serializer.data.active
-    about_section_serializer.save()
-    return Response(data=section, status=status.HTTP_200_OK)
+    return Response(data=about_section_serializer.data, status=status.HTTP_200_OK)
 
 class AboutSectionAPIView(APIView):
     def get(self, request: Request, section_name: str) -> Response:
@@ -55,17 +55,15 @@ class AboutSectionAPIView(APIView):
         should_insert = existing_section == None
 
         if should_insert:
-          about_section_serializer = AboutSectionSerializer(data=request.data)
-          response = Response(f'Created about section "{section_name}"', status=status.HTTP_201_CREATED)
-        else:
-          about_section_serializer = AboutSectionSerializer(existing_section, data=request.data)
-          response = Response(f'Updated about section "{section_name}"', status=status.HTTP_200_OK)
+            return Response(f'About section "{section_name}" does not exists, use POST method to create it', status=status.HTTP_400_BAD_REQUEST)
+
+        about_section_serializer = AboutSectionSerializer(existing_section, data=request.data)
+        response = Response(f'Updated about section "{section_name}"', status=status.HTTP_200_OK)
 
         if not about_section_serializer.is_valid():
           return Response(data=about_section_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            about_section_serializer.validated_data.name=section_name
             about_section_serializer.save()
             return response
         except Exception as e:
