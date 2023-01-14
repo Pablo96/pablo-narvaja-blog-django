@@ -10,7 +10,7 @@ To learn the basics of rest api implementation with django/drf
 - django-rest-framework
 
 ## Project Scope
-- ABM for tags, blogs, blob resources(img, gif, etc), page configuration (about sections, footer, etc)
+- ABM for tags, blogs, page configuration (about sections, footer)
 - Require log-in (Oauth2) for every endpoint except log-in and sign-up
 - ABM of users and superusers
 - Not a production ready product so logging and production/debug settings are not a priority and may never be implemented
