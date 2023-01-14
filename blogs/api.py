@@ -4,7 +4,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import BlogSerializer, BlogPreviewSerializer
-from .models import Blog, Tag
+from .models import Blog
 
 @api_view(['GET'])
 def get_all_blogs_previews(request: Request) -> Response:
@@ -19,13 +19,13 @@ def get_all_blogs_previews(request: Request) -> Response:
 
 @api_view(['GET'])
 def get_blog(request: Request, blog_slug: str) -> Response:
-    try:
-        blog = Blog.objects.get(pk=blog_slug)
-        blog_serializer = BlogSerializer(blog)
-        blog = blog_serializer.data
-        return Response(data=blog, status=status.HTTP_200_OK)
-    except:
+    blog = Blog.objects.filter(pk=blog_slug).first()
+    if blog is None:
         return Response(data=f'Blog "{blog_slug}" not found', status=status.HTTP_404_NOT_FOUND)
+    blog_serializer = BlogSerializer(blog)
+    blog = blog_serializer.data
+    return Response(data=blog, status=status.HTTP_200_OK)
+
 
 @api_view(['POST', 'PUT'])
 def create_or_update_blog(request: Request, blog_slug: str) -> Response:
