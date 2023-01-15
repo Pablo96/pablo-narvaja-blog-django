@@ -18,6 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
+    path('users/', include('users.urls')),
     path('blogs/', include('blogs.urls')),
     path('tags/', include('tags.urls')),
     path('', include('page_config.urls')),
