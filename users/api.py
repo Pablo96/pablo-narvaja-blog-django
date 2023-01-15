@@ -10,12 +10,17 @@ from .models import User
 def get_all_users(request: Request) -> Response:
     return Response(status=status.HTTP_200_OK)
 
+
+@api_view(['POST'])
+def sign_up(request: Request) -> Response:
+    return Response(status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 def sign_in(request: Request) -> Response:
     return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-def sign_up(request: Request) -> Response:
+def sign_out(request: Request) -> Response:
     return Response(status=status.HTTP_200_OK)
 
 class UserAPIView(APIView):

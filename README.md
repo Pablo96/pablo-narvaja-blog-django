@@ -11,10 +11,12 @@ To learn the basics of rest api implementation with django/drf
 
 ## Project Scope
 - ABM for tags, blogs, page configuration (about sections, footer)
-- Require log-in (Oauth2) for every endpoint except log-in and sign-up
-- ABM of users and superusers
+- Require log-in (Oauth2) for every endpoint except log-in (front-end clients will have a user and its credential in their configs)
+- ABM of users and superusers.
 
 ## Project not Scope
 - clear and extensive logging
-- separation of production and debug settings
-- security concerns
+- security concerns (secrets, settings for production, etc)
+
+# Usage
+TODO
