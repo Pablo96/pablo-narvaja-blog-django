@@ -27,9 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,10 +57,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'pablo_narvaja_blog.urls'
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 TEMPLATES = [
     {

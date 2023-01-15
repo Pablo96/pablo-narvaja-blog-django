@@ -13,4 +13,8 @@ To learn the basics of rest api implementation with django/drf
 - ABM for tags, blogs, page configuration (about sections, footer)
 - Require log-in (Oauth2) for every endpoint except log-in and sign-up
 - ABM of users and superusers
-- Not a production ready product so logging and production/debug settings are not a priority and may never be implemented
+
+## Project not Scope
+- clear and extensive logging
+- separation of production and debug settings
+- security concerns
